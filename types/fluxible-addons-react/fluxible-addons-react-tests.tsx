@@ -16,10 +16,12 @@ const ConnectedWithComponent = connectToStores(App, [TestStore], (context) => ({
     test: 'string'
 }));
 
-const ConnectedWithDecorator = connectToStores([TestStore], (context) => {
-    test: context.getStore(TestStore).getText(),;
-});
+const ConnectedWithDecorator = connectToStores([TestStore], (context) => ({
+    test: context.getStore(TestStore).getText()
+}));
+
+<ConnectedWithComponent />;
 
 ReactDOM.renderToString(
-    createElementWithContext(context, ConnectedWithComponent)
+    createElementWithContext(context, { test: 'text' })
 );
