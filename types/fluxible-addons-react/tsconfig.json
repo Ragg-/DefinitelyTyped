@@ -17,6 +17,8 @@
     },
     "files": [
         "index.d.ts",
+        "createElementWithContext.d.ts",
+        "connectToStores.d.ts",
         "fluxible-addons-react-tests.ts"
     ]
 }

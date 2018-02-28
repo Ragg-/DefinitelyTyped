@@ -1,39 +1,80 @@
 // Type definitions for fluxible 1.4
 // Project: https://fluxible.io/
-// Definitions by: My Self <https://github.com/me>
+// Definitions by: Ragg <https://github.com/Ragg->
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
+// TypeScript Version: 2.3
+import * as React from 'react';
+import { Dispatcher, DispatcherError, Store } from 'dispatchr';
+import { EventEmitter } from 'events';
 
-/*~ If this module is a UMD module that exposes a global variable 'myLib' when
- *~ loaded outside a module loader environment, declare that global here.
- *~ Otherwise, delete this declaration.
- */
-export as namespace myLib;
-
-/*~ If this module has methods, declare them as functions like so.
- */
-export function myMethod(a: string): string;
-export function myOtherMethod(a: number): number;
-
-/*~ You can declare types that are available via importing the module */
-export interface someType {
-    name: string;
-    length: number;
-    extras?: string[];
+declare class Fluxible {
+    constructor(options?: Fluxible.FluxibleOption);
+    createContext(options?: Fluxible.ContextOptions): Fluxible.FluxibleContext;
+    registerStore(storeClass: Fluxible.StoreClass): void;
+    plug(plugin: any): void;
+    rehydrate(state: Fluxible.DehydratedState, callback?: (err: Error, context: Fluxible.FluxibleContext) => void): Promise<Fluxible.FluxibleContext>;
 }
 
-/*~ You can declare properties of the module using const, let, or var */
-export const myField: number;
+declare namespace Fluxible {
+    export interface FluxibleOption {
+        component?: { new(): React.Component<any, any> };
+        componentActionErrorHandler?: (ctx: ComponentContext, payload: any, done: () => {}) => void;
+        errorHandler?: (e: DispatcherError) => void;
+    }
 
-/*~ If there are types, properties, or methods inside dotted names
- *~ of the module, declare them inside a 'namespace'.
- */
-export namespace subProp {
-    /*~ For example, given this definition, someone could write:
-     *~   import { subProp } from 'yourModule';
-     *~   subProp.foo();
-     *~ or
-     *~   import * as yourMod from 'yourModule';
-     *~   yourMod.subProp.foo();
-     */
-    export function foo(): void;
+    export interface ContextOptions {
+        app: Fluxible;
+        optimizePromiseCallback?: boolean;
+    }
+
+    export interface DehydratedState {
+        context?: {
+            dispatcher: {
+                stores?: {
+                    [storeName: string]: any
+                }
+                options?: {
+                    optimizePromiseCallback: boolean
+                },
+                plugins?: any
+            },
+            plugins?: any
+        };
+    }
+
+    export interface StoreClass<S = {}> {
+        new(dispacher: Dispatcher): Store<S>;
+        storeName?: string;
+        handlers?: { [actionName: string]: string };
+    }
+
+    export interface Action<P, R = any> {
+        (actionContext: ActionContext, payload: P): Promise<R> | void;
+        (actionContext: ActionContext, payload: P, done: () => void): void;
+    }
+
+    export interface FluxibleContext {
+        executeAction<P, P2 extends P>(action: Action<P>, payload: P2): Promise<any>;
+        executeAction<P, P2 extends P>(action: Action<P>, payload: P2, done: (err: Error, result: any) => {}): void;
+        getStore<S extends Store = S>(store: string): S;
+        getStore<S extends Store = S>(store: StoreClass<S>): S;
+    }
+
+    export interface ActionContext {
+        dispatch<P>(name: string, payload: 　P): void;
+        executeAction<P, P2 extends P>(action: Action<P>, payload: P2): Promise<any>;
+        executeAction<P, P2 extends P>(action: Action<P>, payload: P2, done: (err: Error, result: any) => {}): void;
+        getStore<S extends Store = S>(store: string): S;
+        getStore<S extends Store = S>(store: StoreClass<S>): S;
+    }
+
+    export interface ComponentContext {
+        executeAction<P, P2 extends P>(action: Action<P>, payload: P2): void;
+        getStore<S extends Store = Store>(store: string): S;
+        getStore<S extends Store>(store: StoreClass<any>): S;
+    }
+
+    export type StoreContext = object;
 }
+
+export = Fluxible
