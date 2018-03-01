@@ -1,8 +1,14 @@
 import Fluxible = require('./index');
 
-const App = (props: object) => <div {...props} />;
+const App = (props: object) => (<div {...props} />);
 
-const fluxible = new Fluxible();
+const fluxible = new Fluxible({
+    component: App,
+    componentActionErrorHandler: (ctx, payload, done) => {
+        console.log();
+    },
+});
 const context = fluxible.createContext({
-    app: App
+    app: fluxible,
+    optimizePromiseCallback: true,
 });

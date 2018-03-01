@@ -17,7 +17,7 @@ declare class Fluxible {
 
 declare namespace Fluxible {
     export interface FluxibleOption {
-        component?: { new(): React.Component<any, any> };
+        component?: React.ComponentClass;
         componentActionErrorHandler?: (ctx: ComponentContext, payload: any, done: () => {}) => void;
         errorHandler?: (e: DispatcherError) => void;
     }
@@ -48,28 +48,25 @@ declare namespace Fluxible {
         handlers?: { [actionName: string]: string };
     }
 
-    export interface Action<P, R = any> {
-        (actionContext: ActionContext, payload: P): Promise<R> | void;
-        (actionContext: ActionContext, payload: P, done: () => void): void;
-    }
+    export type ActionCreator<T = {}> = (actionContext: ActionContext, payload: T, done: () => void) => Promise<void>|void
 
     export interface FluxibleContext {
-        executeAction<P, P2 extends P>(action: Action<P>, payload: P2): Promise<any>;
-        executeAction<P, P2 extends P>(action: Action<P>, payload: P2, done: (err: Error, result: any) => {}): void;
+        executeAction<P>(action: ActionCreator<P>, payload: P): Promise<any>;
+        executeAction<P>(action: ActionCreator<P>, payload: P, done: (err: Error, result: any) => {}): void;
         getStore<S extends Store = S>(store: string): S;
         getStore<S extends Store = S>(store: StoreClass<S>): S;
     }
 
     export interface ActionContext {
-        dispatch<P>(name: string, payload: 　P): void;
-        executeAction<P, P2 extends P>(action: Action<P>, payload: P2): Promise<any>;
-        executeAction<P, P2 extends P>(action: Action<P>, payload: P2, done: (err: Error, result: any) => {}): void;
+        dispatch<P>(name: string, payload: P): void;
+        executeAction<P, P2 extends P>(action: ActionCreator<P>, payload: P2): Promise<any>;
+        executeAction<P, P2 extends P>(action: ActionCreator<P>, payload: P2, done: (err: Error, result: any) => {}): void;
         getStore<S extends Store = S>(store: string): S;
         getStore<S extends Store = S>(store: StoreClass<S>): S;
     }
 
     export interface ComponentContext {
-        executeAction<P, P2 extends P>(action: Action<P>, payload: P2): void;
+        executeAction<P, P2 extends P>(action: ActionCreator<P>, payload: P2): void;
         getStore<S extends Store = Store>(store: string): S;
         getStore<S extends Store>(store: StoreClass<any>): S;
     }
