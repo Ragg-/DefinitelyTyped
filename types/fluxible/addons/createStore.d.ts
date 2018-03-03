@@ -1,2 +1,2 @@
-import * as BaseStore from 'dispatchr/addons/createStore';
-export = BaseStore;
+import createStore = require('dispatchr/addons/createStore');
+export = createStore;
