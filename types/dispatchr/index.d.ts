@@ -1,6 +1,6 @@
 // Type definitions for dispatchr 1.2
 // Project: https://github.com/yahoo/fluxible#readme
-// Definitions by: Ragg <https://github.com/Ragg->
+// Definitions by: Mitsuka Hanakura a.k.a. ragg <https://github.com/ra-gg>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 // TypeScript Version: 2.5
 /// <reference types="node" />
@@ -17,7 +17,7 @@ export interface DispatcherOption {
 
 export interface StoreClass {
     storeName: string;
-    new(): Store;
+    new (): Store;
 }
 
 export interface Store<S = {}> extends EventEmitter {
